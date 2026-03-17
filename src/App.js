@@ -92,15 +92,47 @@ function HealthDots() {
       .then(d => setStatus({ api: true, db: d.database === 'connected' }))
       .catch(() => setStatus({ api: false, db: false }));
   }, []);
+
+  const dots = [
+    { label: 'API',  ok: status.api },
+    { label: 'DB',   ok: status.db },
+    { label: 'RUST', ok: true },
+  ];
+
   return (
-    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-      {[{ l: 'API', ok: status.api }, { l: 'DB', ok: status.db }, { l: 'RUST', ok: true }].map(d => (
-        <div key={d.l} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-          <div style={{ width: 5, height: 5, borderRadius: '50%', background: d.ok === null ? '#3f3f46' : d.ok ? '#22c55e' : '#ef4444' }} />
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#3f3f46', letterSpacing: '0.08em' }}>{d.l}</span>
-        </div>
-      ))}
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      {dots.map(d => {
+        const color = d.ok === null ? '#3f3f46' : d.ok ? '#22c55e' : '#ef4444';
+        const glow  = d.ok === null ? 'none'
+          : d.ok ? '0 0 0 2px rgba(34,197,94,0.2), 0 0 8px rgba(34,197,94,0.6)'
+          : '0 0 0 2px rgba(239,68,68,0.2), 0 0 8px rgba(239,68,68,0.6)';
+        return (
+          <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: color, boxShadow: glow, flexShrink: 0,
+            }} />
+            <span style={{
+              fontFamily: 'var(--font-mono)', fontSize: 8,
+              color: '#a1a1aa', letterSpacing: '0.1em',
+              textShadow: '0 0 6px rgba(161,161,170,0.3)',
+            }}>{d.label}</span>
+          </div>
+        );
+      })}
     </div>
+  );
+}
+
+function SectionTag({ children }) {
+  return (
+    <div style={{
+      fontFamily: 'var(--font-mono)', fontSize: 8,
+      letterSpacing: '0.25em', textTransform: 'uppercase',
+      color: '#a1a1aa',
+      textShadow: '0 0 8px rgba(161,161,170,0.25)',
+      marginBottom: 10,
+    }}>{children}</div>
   );
 }
 
@@ -110,16 +142,20 @@ function SidebarContent({ page, setPage, onClose, isMobile }) {
 
       {/* Logo */}
       <div style={{ padding: '16px', borderBottom: '1px solid #1c1c1e', flexShrink: 0 }}>
-        <div style={{ fontFamily: "'Bebas Neue','Barlow Condensed',sans-serif", fontSize: 24, letterSpacing: '0.02em', color: '#f4f4f5', lineHeight: 1 }}>
+        <div style={{
+          fontFamily: "'Bebas Neue','Barlow Condensed',sans-serif",
+          fontSize: 24, letterSpacing: '0.02em',
+          color: '#f4f4f5', lineHeight: 1,
+        }}>
           CLINICAL<br /><span style={{ color: '#ef4444' }}>AGENT</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#27272a', letterSpacing: '0.15em' }}>V3.0.0 · AUTONOMOUS</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#52525b', letterSpacing: '0.15em' }}>V3.0.0 · AUTONOMOUS</div>
           <HealthDots />
         </div>
       </div>
 
-      {/* Navigation — top on mobile */}
+      {/* Navigation */}
       <nav style={{ padding: '8px 0', flexShrink: 0 }}>
         {NAV.map(n => (
           <button key={n.id} onClick={() => { setPage(n.id); if (onClose) onClose(); }}
@@ -134,32 +170,32 @@ function SidebarContent({ page, setPage, onClose, isMobile }) {
             onMouseEnter={e => e.currentTarget.style.background = '#161618'}
             onMouseLeave={e => e.currentTarget.style.background = 'none'}
           >
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: page === n.id ? '#ef4444' : '#27272a', letterSpacing: '0.1em', width: 14 }}>{n.num}</span>
-            <span style={{ fontFamily: "'Bebas Neue','Barlow Condensed',sans-serif", fontSize: isMobile ? 20 : 16, textTransform: 'uppercase', letterSpacing: '0.04em', color: page === n.id ? '#f4f4f5' : '#52525b', flex: 1 }}>{n.label}</span>
-            {!isMobile && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#27272a' }}>[{n.key}]</span>}
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: page === n.id ? '#ef4444' : '#3f3f46', letterSpacing: '0.1em', width: 14 }}>{n.num}</span>
+            <span style={{ fontFamily: "'Bebas Neue','Barlow Condensed',sans-serif", fontSize: isMobile ? 20 : 16, textTransform: 'uppercase', letterSpacing: '0.04em', color: page === n.id ? '#f4f4f5' : '#71717a', flex: 1 }}>{n.label}</span>
+            {!isMobile && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#3f3f46' }}>[{n.key}]</span>}
           </button>
         ))}
       </nav>
 
-      {/* Operator — bottom on mobile */}
+      {/* Operator */}
       <div style={{ padding: '12px 16px', borderTop: '1px solid #1c1c1e', flexShrink: 0 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#27272a', letterSpacing: '0.2em', marginBottom: 8 }}>[OPERATOR]</div>
+        <SectionTag>[OPERATOR]</SectionTag>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-          <div style={{ width: 32, height: 32, flexShrink: 0, background: '#111113', border: '1px solid #ef444444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#ef4444' }}>MM</div>
+          <div style={{ width: 32, height: 32, flexShrink: 0, background: '#111113', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#ef4444', boxShadow: '0 0 8px rgba(239,68,68,0.2)' }}>MM</div>
           <div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#d4d4d8', letterSpacing: '0.06em' }}>MALIKI MAYZAR</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#52525b', letterSpacing: '0.08em', marginTop: 1 }}>ASPIRING AI ENGINEER</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#71717a', letterSpacing: '0.08em', marginTop: 1 }}>ASPIRING AI ENGINEER</div>
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {SOCIAL_LINKS.map(l => (
             <a key={l.num} href={l.url} target="_blank" rel="noopener noreferrer"
-              style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#3f3f46', textDecoration: 'none', border: '1px solid #1c1c1e', padding: isMobile ? '8px' : '4px 8px', letterSpacing: '0.06em', display: 'flex', gap: 6, alignItems: 'center', transition: 'all 0.15s', minHeight: isMobile ? 44 : 'auto' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#3f3f46'; e.currentTarget.style.borderColor = '#1c1c1e'; }}
+              style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#52525b', textDecoration: 'none', border: '1px solid #1c1c1e', padding: isMobile ? '8px' : '4px 8px', letterSpacing: '0.06em', display: 'flex', gap: 6, alignItems: 'center', transition: 'all 0.15s', minHeight: isMobile ? 44 : 'auto' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)'; e.currentTarget.style.textShadow = '0 0 8px rgba(239,68,68,0.4)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = '#52525b'; e.currentTarget.style.borderColor = '#1c1c1e'; e.currentTarget.style.textShadow = 'none'; }}
             >
-              <span style={{ color: '#27272a', fontSize: 8 }}>{l.num}</span>
-              <span style={{ color: '#52525b' }}>{l.label}</span>
+              <span style={{ color: '#3f3f46', fontSize: 8 }}>{l.num}</span>
+              <span style={{ color: '#71717a' }}>{l.label}</span>
               <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 8 }}>{l.handle}</span>
               <span style={{ fontSize: 8 }}>↗</span>
             </a>
@@ -167,49 +203,49 @@ function SidebarContent({ page, setPage, onClose, isMobile }) {
         </div>
       </div>
 
-      {/* Infra */}
+      {/* System Infra */}
       <div style={{ padding: '10px 16px', borderTop: '1px solid #1c1c1e', flexShrink: 0 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#27272a', letterSpacing: '0.2em', marginBottom: 6 }}>[SYSTEM_INFRA]</div>
+        <SectionTag>[SYSTEM_INFRA]</SectionTag>
         {INFRA.map(({ label, val }) => (
-          <div key={label} style={{ display: 'flex', gap: 4, marginBottom: 2 }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#3f3f46', letterSpacing: '0.06em', width: 80, flexShrink: 0 }}>{label}</span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#52525b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{val}</span>
+          <div key={label} style={{ display: 'flex', gap: 4, marginBottom: 3 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#71717a', letterSpacing: '0.06em', width: 80, flexShrink: 0 }}>{label}</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#a1a1aa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{val}</span>
           </div>
         ))}
         <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid #1c1c1e' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#27272a', letterSpacing: '0.1em', marginBottom: 2 }}>NEXT_RUN</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#71717a', letterSpacing: '0.1em', marginBottom: 2 }}>NEXT_RUN</div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11 }}><Countdown /></div>
         </div>
       </div>
 
-      {/* Stack */}
+      {/* Tech Stack */}
       <div style={{ padding: '10px 16px', borderTop: '1px solid #1c1c1e', flexShrink: 0 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#27272a', letterSpacing: '0.2em', marginBottom: 6 }}>[TECH_STACK]</div>
+        <SectionTag>[TECH_STACK]</SectionTag>
         {STACK.map(({ layer, tech, color }) => (
-          <div key={layer} style={{ display: 'flex', gap: 6, marginBottom: 3, alignItems: 'center' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#27272a', width: 36, flexShrink: 0 }}>{layer}</span>
-            <span style={{ width: 1, height: 8, background: '#1c1c1e', flexShrink: 0 }} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color }}>{tech}</span>
+          <div key={layer} style={{ display: 'flex', gap: 6, marginBottom: 4, alignItems: 'center' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#71717a', letterSpacing: '0.08em', width: 36, flexShrink: 0 }}>{layer}</span>
+            <span style={{ width: 1, height: 8, background: '#27272a', flexShrink: 0 }} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color, textShadow: `0 0 8px ${color}66`, letterSpacing: '0.06em' }}>{tech}</span>
           </div>
         ))}
       </div>
 
-      {/* API docs + footer */}
+      {/* API Docs + Footer */}
       <div style={{ padding: '10px 16px', borderTop: '1px solid #1c1c1e', marginTop: 'auto', flexShrink: 0 }}>
         <a href="https://clinical-agent-api-production.up.railway.app/docs" target="_blank" rel="noopener noreferrer"
-          style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#3f3f46', textDecoration: 'none', border: '1px solid #1c1c1e', padding: '5px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.15s', letterSpacing: '0.1em', marginBottom: 8 }}
+          style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#52525b', textDecoration: 'none', border: '1px solid #1c1c1e', padding: '5px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.15s', letterSpacing: '0.1em', marginBottom: 8 }}
           onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; }}
-          onMouseLeave={e => { e.currentTarget.style.color = '#3f3f46'; e.currentTarget.style.borderColor = '#1c1c1e'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = '#52525b'; e.currentTarget.style.borderColor = '#1c1c1e'; }}
         >[API_DOCS] ↗</a>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: '#1c1c1e', lineHeight: 1.8, letterSpacing: '0.06em' }}>
-          <div>BUILT BY MAYZAR</div>
-          <div style={{ color: '#22c55e' }}>97× RUST SPEEDUP</div>
-          <div>ZERO BUDGET OPS</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, lineHeight: 1.8, letterSpacing: '0.06em' }}>
+          <div style={{ color: '#3f3f46' }}>BUILT BY MAYZAR</div>
+          <div style={{ color: '#22c55e', textShadow: '0 0 6px rgba(34,197,94,0.4)' }}>97× RUST SPEEDUP</div>
+          <div style={{ color: '#3f3f46' }}>ZERO BUDGET OPS</div>
         </div>
       </div>
 
       <div style={{ position: 'relative', height: 2, flexShrink: 0 }}>
-        <div style={{ position: 'absolute', right: 0, top: -40, width: 2, height: 40, background: '#ef4444' }} />
+        <div style={{ position: 'absolute', right: 0, top: -40, width: 2, height: 40, background: '#ef4444', boxShadow: '0 0 8px rgba(239,68,68,0.6)' }} />
       </div>
     </div>
   );
@@ -221,7 +257,6 @@ export default function App() {
   const isMobile = useIsMobile();
   const touchStartX = useRef(null);
 
-  // Keyboard shortcuts (desktop)
   useEffect(() => {
     if (isMobile) return;
     const handler = (e) => {
@@ -233,7 +268,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', handler);
   }, [isMobile]);
 
-  // Swipe gesture
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX;
   }, []);
@@ -246,7 +280,6 @@ export default function App() {
     touchStartX.current = null;
   }, []);
 
-  // Close menu on page change
   const changePage = (id) => {
     setPage(id);
     setMenuOpen(false);
@@ -258,13 +291,15 @@ export default function App() {
       onTouchEnd={handleTouchEnd}
     >
       <style>{`
+        @keyframes ca-glow-grn { 0%,100%{box-shadow:0 0 4px rgba(34,197,94,0.4);}50%{box-shadow:0 0 10px rgba(34,197,94,0.8);} }
         @keyframes ca-pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.85);} }
         @keyframes pulse-red { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4);}50%{box-shadow:0 0 0 4px rgba(239,68,68,0);} }
         @keyframes sidebar-scan { 0%{top:-1px;}100%{top:100%;} }
         @keyframes slide-in { from{transform:translateX(-100%);}to{transform:translateX(0);} }
         @keyframes fade-in { from{opacity:0;}to{opacity:1;} }
         * { -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { width: 2px; } ::-webkit-scrollbar-thumb { background: #27272a; }
+        ::-webkit-scrollbar { width: 2px; }
+        ::-webkit-scrollbar-thumb { background: #27272a; }
       `}</style>
 
       {/* DESKTOP SIDEBAR */}
@@ -304,7 +339,7 @@ export default function App() {
         </header>
       )}
 
-      {/* MOBILE DRAWER OVERLAY */}
+      {/* MOBILE DRAWER */}
       {isMobile && menuOpen && (
         <>
           <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 40, animation: 'fade-in 0.2s ease' }} />
@@ -316,14 +351,13 @@ export default function App() {
 
       {/* MAIN CONTENT */}
       <main style={{ flex: 1, overflowY: 'auto', minWidth: 0, position: 'relative', background: '#09090b', paddingBottom: isMobile ? 70 : 0 }}>
-        {/* Desktop top bar */}
         {!isMobile && (
           <div style={{ position: 'sticky', top: 0, zIndex: 10, background: '#09090b', borderBottom: '1px solid #1c1c1e', padding: '8px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#27272a', letterSpacing: '0.15em' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#52525b', letterSpacing: '0.15em' }}>
               CLINICAL-AGENT / {NAV.find(n => n.id === page)?.label.toUpperCase()}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#27272a', letterSpacing: '0.1em' }}>UTC <UTCClock /></span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#52525b', letterSpacing: '0.1em' }}>UTC <UTCClock /></span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#ef4444', animation: 'pulse-red 2s ease infinite' }} />
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#ef4444', letterSpacing: '0.15em' }}>LIVE</span>
@@ -351,8 +385,8 @@ export default function App() {
               borderTop: page === n.id ? '2px solid #ef4444' : '2px solid transparent',
               transition: 'all 0.1s',
             }}>
-              <span style={{ fontSize: 14, color: page === n.id ? '#ef4444' : '#27272a' }}>{n.icon}</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: page === n.id ? '#f4f4f5' : '#27272a', letterSpacing: '0.08em' }}>{n.label.slice(0, 4).toUpperCase()}</span>
+              <span style={{ fontSize: 14, color: page === n.id ? '#ef4444' : '#3f3f46' }}>{n.icon}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: page === n.id ? '#f4f4f5' : '#3f3f46', letterSpacing: '0.08em' }}>{n.label.slice(0, 4).toUpperCase()}</span>
             </button>
           ))}
         </nav>
