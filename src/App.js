@@ -6,79 +6,136 @@ import Runs from './pages/Runs';
 import Claims from './pages/Claims';
 
 const NAV = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'conflicts', label: 'Conflicts' },
-  { id: 'claims', label: 'Claims' },
-  { id: 'papers', label: 'Papers' },
-  { id: 'runs', label: 'Runs' },
+  { id: 'overview', label: 'Overview', num: '01' },
+  { id: 'conflicts', label: 'Conflicts', num: '02' },
+  { id: 'claims', label: 'Claims', num: '03' },
+  { id: 'papers', label: 'Papers', num: '04' },
+  { id: 'runs', label: 'Runs', num: '05' },
 ];
 
 export default function App() {
   const [page, setPage] = useState('overview');
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--black)', display: 'flex' }}>
+
       {/* Sidebar */}
       <aside style={{
-        width: 200, flexShrink: 0,
+        width: 220,
+        flexShrink: 0,
         borderRight: '1px solid var(--border)',
-        display: 'flex', flexDirection: 'column',
-        padding: '1.5rem 0',
-        position: 'sticky', top: 0, height: '100vh',
-        background: 'var(--bg1)'
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'var(--black2)',
+        position: 'sticky',
+        top: 0,
+        height: '100vh',
+        overflow: 'hidden',
       }}>
         {/* Logo */}
-        <div style={{ padding: '0 1.25rem 1.5rem', borderBottom: '1px solid var(--border)', marginBottom: '1rem' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 18, color: 'var(--text)', lineHeight: 1.2 }}>clinical</div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--accent)', letterSpacing: '0.08em' }}>agent v3.0</div>
+        <div style={{ padding: '2rem 1.5rem 1.5rem', borderBottom: '1px solid var(--border)' }}>
+          <div style={{
+            fontFamily: 'var(--font-display)',
+            fontWeight: 900,
+            fontSize: 28,
+            letterSpacing: '-0.02em',
+            textTransform: 'uppercase',
+            color: 'var(--white)',
+            lineHeight: 1,
+          }}>
+            CLINICAL<br />
+            <span style={{ color: 'var(--red)' }}>AGENT</span>
+          </div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--white4)', letterSpacing: '0.2em', marginTop: 8 }}>V3.0 / AUTONOMOUS</div>
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, padding: '0 0.75rem' }}>
+        <nav style={{ flex: 1, padding: '1rem 0' }}>
           {NAV.map(n => (
             <button
               key={n.id}
               onClick={() => setPage(n.id)}
               style={{
-                width: '100%', textAlign: 'left',
-                background: page === n.id ? 'var(--bg3)' : 'transparent',
+                width: '100%',
+                textAlign: 'left',
+                background: 'none',
                 border: 'none',
-                borderRadius: 'var(--radius)',
-                padding: '7px 12px',
-                color: page === n.id ? 'var(--text)' : 'var(--text3)',
-                fontFamily: 'var(--font-body)',
-                fontSize: 14, fontWeight: page === n.id ? 500 : 300,
-                cursor: 'pointer',
-                marginBottom: 2,
-                transition: 'all 0.15s'
+                borderLeft: page === n.id ? '3px solid var(--red)' : '3px solid transparent',
+                padding: '12px 1.5rem',
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: 12,
+                cursor: 'crosshair',
+                transition: 'all 0.1s',
               }}
-              onMouseEnter={e => { if (page !== n.id) e.currentTarget.style.color = 'var(--text2)'; }}
-              onMouseLeave={e => { if (page !== n.id) e.currentTarget.style.color = 'var(--text3)'; }}
+              onMouseEnter={e => { if (page !== n.id) e.currentTarget.style.background = 'var(--black3)'; }}
+              onMouseLeave={e => { if (page !== n.id) e.currentTarget.style.background = 'none'; }}
             >
-              {n.label}
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: page === n.id ? 'var(--red)' : 'var(--white4)', letterSpacing: '0.1em' }}>{n.num}</span>
+              <span style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 18,
+                fontWeight: page === n.id ? 800 : 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.02em',
+                color: page === n.id ? 'var(--white)' : 'var(--white3)',
+              }}>{n.label}</span>
             </button>
           ))}
         </nav>
 
-        {/* Footer */}
-        <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text3)', lineHeight: 1.6 }}>
-            <div>Python · Rust · Go</div>
-            <div>LangGraph · pgvector</div>
-            <div style={{ marginTop: 6, color: 'var(--text3)' }}>
-              <a href="https://clinical-agent-api-production.up.railway.app/docs" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--blue)', textDecoration: 'none', fontSize: 11 }}>API docs ↗</a>
+        {/* Stack info */}
+        <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border)' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--white4)', lineHeight: 2, letterSpacing: '0.08em' }}>
+            <div>PYTHON · RUST · GO</div>
+            <div>LANGGRAPH · PGVECTOR</div>
+            <div>GROQ LLM · ACTIX-WEB</div>
+          </div>
+          <a
+            href="https://clinical-agent-api-production.up.railway.app/docs"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline-block', marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--red)', letterSpacing: '0.1em', textDecoration: 'none' }}
+          >
+            API DOCS ↗
+          </a>
+        </div>
+
+        {/* Decorative side accent */}
+        <div style={{ position: 'absolute', bottom: 120, right: 0, width: 2, height: 60, background: 'var(--red)' }} />
+      </aside>
+
+      {/* Main */}
+      <main style={{ flex: 1, overflowY: 'auto', minWidth: 0, position: 'relative' }}>
+        {/* Top bar */}
+        <div style={{
+          position: 'sticky', top: 0, zIndex: 10,
+          background: 'var(--black)',
+          borderBottom: '1px solid var(--border)',
+          padding: '10px 2.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--white4)', letterSpacing: '0.15em' }}>
+            CLINICAL-AGENT / {NAV.find(n => n.id === page)?.label.toUpperCase()}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--white4)', letterSpacing: '0.1em' }}>
+              {new Date().toUTCString().slice(0, 25).toUpperCase()}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--red)', animation: 'pulse-red 2s ease infinite' }} />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--red)', letterSpacing: '0.15em' }}>LIVE</span>
             </div>
           </div>
         </div>
-      </aside>
 
-      {/* Main content */}
-      <main style={{ flex: 1, overflowY: 'auto', minWidth: 0 }}>
-        {page === 'overview' && <Overview />}
+        {page === 'overview'  && <Overview />}
         {page === 'conflicts' && <Conflicts />}
-        {page === 'claims' && <Claims />}
-        {page === 'papers' && <Papers />}
-        {page === 'runs' && <Runs />}
+        {page === 'claims'    && <Claims />}
+        {page === 'papers'    && <Papers />}
+        {page === 'runs'      && <Runs />}
       </main>
     </div>
   );
