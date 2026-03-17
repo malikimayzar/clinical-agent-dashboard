@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useAPI } from '../api';
 import { MetricCard, Card, SectionHeader, Spinner, ErrorState, pct, shortDate, timeAgo, SeverityPill } from '../components/UI';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAPI, apiFetch } from '../api';
-import { Spinner, EmptyState, ErrorState, StatusPill, SeverityPill, pct, shortDatetime, timeAgo } from '../components/UI';
+import { Spinner, EmptyState, ErrorState, StatusPill, shortDatetime, timeAgo } from '../components/UI';
 
 function RunDetail({ runId, onClose }) {
   const [data, setData] = React.useState(null);
