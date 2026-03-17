@@ -1,3 +1,5 @@
+import React from 'react';
+
 const BASE = 'https://clinical-agent-api-production.up.railway.app';
 
 export async function apiFetch(path) {
@@ -19,11 +21,9 @@ export function useAPI(path, deps = []) {
       .then(d => { if (!cancelled) { setData(d); setLoading(false); } })
       .catch(e => { if (!cancelled) { setError(e.message); setLoading(false); } });
     return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   return { data, loading, error };
 }
 
-import React from 'react';
 export default apiFetch;
