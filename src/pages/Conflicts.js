@@ -34,12 +34,12 @@ function KnowledgeGraph({ conflicts }) {
     if (!conflicts.length) return;
     const paperNodes = conflicts.slice(0, 5).map((c, i) => ({
       id: `paper_${i}`, type: 'paper', label: `P${i + 1}`,
-      x: 80 + i * 95, y: 50 + Math.sin(i) * 20,
-    }));
+      x: (W / 6) + i * (W / 5.5), y: 30,
+      }));
     const claimNodes = conflicts.slice(0, 5).map((c, i) => ({
       id: `claim_${i}`, type: 'claim', label: `C${i + 1}`,
-      x: 80 + i * 95, y: H - 60 + Math.cos(i) * 15,
-    }));
+      x: (W / 6) + i * (W / 5.5), y: H - 30,
+      }));
     const kbNode = { id: 'kb', type: 'kb', label: 'KB', x: W / 2, y: H / 2 };
     const allNodes = [...paperNodes, ...claimNodes, kbNode];
     const allLinks = [
