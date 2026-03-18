@@ -22,24 +22,27 @@ function timeAgo(s) {
 }
 
 // ── Knowledge Graph ──
-function KnowledgeGraph({ conflicts }) {
+function KnowledgeGraph({ conflicts, isMobile }) {
   const svgRef = useRef(null);
   const [nodes, setNodes] = useState([]);
   const [links, setLinks] = useState([]);
   const [hoveredNode, setHoveredNode] = useState(null);
   const animRef = useRef(null);
-  const W = isMobile ? 320 : 520, H = isMobile ? 220 : 260;
+
+  // Fixed logical canvas — viewBox handles scaling
+  const W = 520, H = 260;
 
   useEffect(() => {
     if (!conflicts.length) return;
-    const paperNodes = conflicts.slice(0, 5).map((c, i) => ({
+    const n = Math.min(conflicts.length, 5);
+    const paperNodes = conflicts.slice(0, n).map((c, i) => ({
       id: `paper_${i}`, type: 'paper', label: `P${i + 1}`,
-      x: (W / 6) + i * (W / 5.5), y: 30,
-      }));
-    const claimNodes = conflicts.slice(0, 5).map((c, i) => ({
+      x: (W / (n + 1)) * (i + 1), y: 40,
+    }));
+    const claimNodes = conflicts.slice(0, n).map((c, i) => ({
       id: `claim_${i}`, type: 'claim', label: `C${i + 1}`,
-      x: (W / 6) + i * (W / 5.5), y: H - 30,
-      }));
+      x: (W / (n + 1)) * (i + 1), y: H - 40,
+    }));
     const kbNode = { id: 'kb', type: 'kb', label: 'KB', x: W / 2, y: H / 2 };
     const allNodes = [...paperNodes, ...claimNodes, kbNode];
     const allLinks = [
@@ -69,7 +72,11 @@ function KnowledgeGraph({ conflicts }) {
             next[j].y -= (dy / dist) * force;
           }
         }
-        return next.map(n => ({ ...n, x: Math.max(18, Math.min(W - 18, n.x)), y: Math.max(18, Math.min(H - 18, n.y)) }));
+        return next.map(n => ({
+          ...n,
+          x: Math.max(18, Math.min(W - 18, n.x)),
+          y: Math.max(18, Math.min(H - 18, n.y)),
+        }));
       });
       frame++;
       if (frame < 80) animRef.current = requestAnimationFrame(simulate);
@@ -83,18 +90,26 @@ function KnowledgeGraph({ conflicts }) {
 
   return (
     <div style={{ background: '#0a0a0c', border: '1px solid #1c1c1e', padding: '12px', marginBottom: 2 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#71717a', letterSpacing: '0.15em' }}>KNOWLEDGE GRAPH — CONFLICT TOPOLOGY</div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 8 }}>
           {[{ color: '#3b82f6', label: 'PAPER' }, { color: '#f59e0b', label: 'CLAIM' }, { color: '#22c55e', label: 'KB' }, { color: '#ef4444', label: 'CONFLICT' }].map(({ color, label }) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
               <div style={{ width: 5, height: 5, borderRadius: '50%', background: color, boxShadow: `0 0 4px ${color}` }} />
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: '#52525b' }}>{label}</span>
             </div>
           ))}
         </div>
       </div>
-      <svg ref={svgRef} width={W} height={H} style={{ display: 'block', cursor: 'crosshair', maxWidth: '100%' }}>
+
+      {/* SVG — viewBox biar auto scale di semua layar */}
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${W} ${H}`}
+        style={{ display: 'block', width: '100%', height: isMobile ? 180 : 240, cursor: 'crosshair' }}
+        preserveAspectRatio="xMidYMid meet"
+      >
         <defs>
           <filter id="glow-red2"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           <filter id="glow-node"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
@@ -108,28 +123,42 @@ function KnowledgeGraph({ conflicts }) {
           if (!s || !t) return null;
           return <line key={i} x1={s.x} y1={s.y} x2={t.x} y2={t.y}
             stroke={l.type === 'conflict' ? '#ef4444' : '#27272a'}
-            strokeWidth={l.type === 'conflict' ? 1.5 : 0.8}
+            strokeWidth={l.type === 'conflict' ? 2 : 1}
             strokeOpacity={l.type === 'conflict' ? 0.8 : 0.3}
-            strokeDasharray={l.type === 'conflict' ? '4 2' : 'none'}
+            strokeDasharray={l.type === 'conflict' ? '6 3' : 'none'}
             filter={l.type === 'conflict' ? 'url(#glow-red2)' : 'none'}
           />;
         })}
         {/* Nodes */}
         {nodes.map(n => (
-          <g key={n.id} onMouseEnter={() => setHoveredNode(n.id)} onMouseLeave={() => setHoveredNode(null)} style={{ cursor: 'pointer' }}>
-            <circle cx={n.x} cy={n.y} r={n.type === 'kb' ? 14 : 8}
-              fill={NODE_COLORS[n.type] + (hoveredNode === n.id ? 'ff' : '77')}
-              stroke={NODE_COLORS[n.type]} strokeWidth={hoveredNode === n.id ? 2 : 1}
+          <g key={n.id}
+            onMouseEnter={() => setHoveredNode(n.id)}
+            onMouseLeave={() => setHoveredNode(null)}
+            style={{ cursor: 'pointer' }}
+          >
+            <circle cx={n.x} cy={n.y}
+              r={n.type === 'kb' ? 16 : 10}
+              fill={NODE_COLORS[n.type] + (hoveredNode === n.id ? 'ff' : '88')}
+              stroke={NODE_COLORS[n.type]}
+              strokeWidth={hoveredNode === n.id ? 2.5 : 1.5}
               filter={hoveredNode === n.id || n.type === 'kb' ? 'url(#glow-node)' : 'none'}
             />
-            <text x={n.x} y={n.y + 1} textAnchor="middle" dominantBaseline="middle"
-              fill="white" fontSize={n.type === 'kb' ? 9 : 7}
-              fontFamily="JetBrains Mono, monospace" fontWeight="bold"
+            <text x={n.x} y={n.y + 1}
+              textAnchor="middle" dominantBaseline="middle"
+              fill="white"
+              fontSize={n.type === 'kb' ? 10 : 8}
+              fontFamily="JetBrains Mono, monospace"
+              fontWeight="bold"
             >{n.label}</text>
           </g>
         ))}
       </svg>
-      {hoveredNode && <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#a1a1aa', marginTop: 4 }}>NODE: {hoveredNode.toUpperCase()} · TYPE: {nodes.find(n => n.id === hoveredNode)?.type?.toUpperCase()}</div>}
+
+      {hoveredNode && (
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#a1a1aa', marginTop: 4 }}>
+          NODE: {hoveredNode.toUpperCase()} · TYPE: {nodes.find(n => n.id === hoveredNode)?.type?.toUpperCase()}
+        </div>
+      )}
     </div>
   );
 }
@@ -340,7 +369,12 @@ export default function Conflicts() {
   const { data, loading, error } = useAPI('/conflicts?limit=20');
   const conflicts = data?.conflicts || [];
   const filtered = filter === 'ALL' ? conflicts : conflicts.filter(c => (c.severity || 'major').toUpperCase() === filter);
-  const counts = { ALL: conflicts.length, CRITICAL: conflicts.filter(c => c.severity === 'critical').length, MAJOR: conflicts.filter(c => !c.severity || c.severity === 'major').length, MINOR: conflicts.filter(c => c.severity === 'minor').length };
+  const counts = {
+    ALL: conflicts.length,
+    CRITICAL: conflicts.filter(c => c.severity === 'critical').length,
+    MAJOR: conflicts.filter(c => !c.severity || c.severity === 'major').length,
+    MINOR: conflicts.filter(c => c.severity === 'minor').length,
+  };
 
   return (
     <div style={{ padding: isMobile ? '16px' : '20px 28px', maxWidth: 1200, background: '#09090b', minHeight: '100vh' }}>
@@ -358,8 +392,10 @@ export default function Conflicts() {
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: isMobile ? 9 : 10, color: '#71717a', letterSpacing: '0.15em' }}>NLI-DETECTED CONTRADICTIONS · GROQ LLAMA 3.3 70B · 42MS/CLAIM</div>
       </div>
 
-      {/* Knowledge Graph — semua device */}
-      {showGraph && conflicts.length > 0 && <KnowledgeGraph conflicts={conflicts} isMobile={isMobile} />}
+      {/* Knowledge Graph */}
+      {showGraph && conflicts.length > 0 && (
+        <KnowledgeGraph conflicts={conflicts} isMobile={isMobile} />
+      )}
 
       {/* Filter tabs */}
       <div style={{ display: 'flex', gap: isMobile ? 4 : 6, alignItems: 'center', marginBottom: 2, flexWrap: 'wrap' }}>
@@ -380,14 +416,21 @@ export default function Conflicts() {
       </div>
 
       {/* Content */}
-      {loading ? <div style={{ padding: '2rem 0', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#71717a' }}>LOADING...</div>
-        : error ? <div style={{ padding: '2rem 0', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#ef4444' }}>ERR: {error}</div>
-        : filtered.length === 0 ? <RadarScan />
-        : <div style={{ display: 'flex', flexDirection: 'column' }}>{filtered.map((c, i) => <ConflictCard key={c.conflict_id || i} conflict={c} index={i} isMobile={isMobile} />)}</div>
+      {loading
+        ? <div style={{ padding: '2rem 0', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#71717a' }}>LOADING...</div>
+        : error
+        ? <div style={{ padding: '2rem 0', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#ef4444' }}>ERR: {error}</div>
+        : filtered.length === 0
+        ? <RadarScan />
+        : <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {filtered.map((c, i) => <ConflictCard key={c.conflict_id || i} conflict={c} index={i} isMobile={isMobile} />)}
+          </div>
       }
 
       {/* Live Log Stream */}
-      <div style={{ marginTop: 2 }}><LiveLogStream isMobile={isMobile} /></div>
+      <div style={{ marginTop: 2 }}>
+        <LiveLogStream isMobile={isMobile} />
+      </div>
     </div>
   );
 }
