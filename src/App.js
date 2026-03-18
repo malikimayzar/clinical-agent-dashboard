@@ -104,7 +104,7 @@ function HealthDots() {
       {dots.map(d => {
         const color = d.ok === null ? '#3f3f46' : d.ok ? '#22c55e' : '#ef4444';
         const glow  = d.ok === null ? 'none'
-          : d.ok ? '0 0 0 2px rgba(34,197,94,0.2), 0 0 8px rgba(34,197,94,0.6)'
+          : d.label === 'RUST' ? '0 0 8px rgba(34,197,94,0.6)' : d.ok ? '0 0 0 2px rgba(34,197,94,0.2), 0 0 8px rgba(34,197,94,0.6)'
           : '0 0 0 2px rgba(239,68,68,0.2), 0 0 8px rgba(239,68,68,0.6)';
         return (
           <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -294,6 +294,8 @@ export default function App() {
         @keyframes ca-glow-grn { 0%,100%{box-shadow:0 0 4px rgba(34,197,94,0.4);}50%{box-shadow:0 0 10px rgba(34,197,94,0.8);} }
         @keyframes ca-pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.85);} }
         @keyframes pulse-red { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4);}50%{box-shadow:0 0 0 4px rgba(239,68,68,0);} }
+        @keyframes ca-flicker { 0%,19%,21%,23%,25%,54%,56%,100%{opacity:1;box-shadow:0 0 8px rgba(239,68,68,0.8);}20%,24%,55%{opacity:0.3;box-shadow:none;} }
+        @keyframes ca-heartbeat { 0%,100%{transform:scale(1);box-shadow:0 0 4px rgba(34,197,94,0.4);}14%{transform:scale(1.3);box-shadow:0 0 10px rgba(34,197,94,0.9);}28%{transform:scale(1);box-shadow:0 0 4px rgba(34,197,94,0.4);}42%{transform:scale(1.15);box-shadow:0 0 7px rgba(34,197,94,0.7);}70%{transform:scale(1);} }
         @keyframes sidebar-scan { 0%{top:-1px;}100%{top:100%;} }
         @keyframes slide-in { from{transform:translateX(-100%);}to{transform:translateX(0);} }
         @keyframes fade-in { from{opacity:0;}to{opacity:1;} }
@@ -332,7 +334,7 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <HealthDots />
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#ef4444', animation: 'pulse-red 2s ease infinite' }} />
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#ef4444', animation: 'ca-flicker 3s ease infinite' }} />
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#ef4444', letterSpacing: '0.15em' }}>LIVE</span>
             </div>
           </div>
@@ -359,7 +361,7 @@ export default function App() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#52525b', letterSpacing: '0.1em' }}>UTC <UTCClock /></span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#ef4444', animation: 'pulse-red 2s ease infinite' }} />
+                <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#ef4444', animation: 'ca-flicker 3s ease infinite' }} />
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#ef4444', letterSpacing: '0.15em' }}>LIVE</span>
               </div>
             </div>
