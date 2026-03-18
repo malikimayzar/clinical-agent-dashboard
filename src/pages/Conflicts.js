@@ -358,8 +358,8 @@ export default function Conflicts() {
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: isMobile ? 9 : 10, color: '#71717a', letterSpacing: '0.15em' }}>NLI-DETECTED CONTRADICTIONS · GROQ LLAMA 3.3 70B · 42MS/CLAIM</div>
       </div>
 
-      {/* Knowledge Graph — desktop only */}
-      {!isMobile && showGraph && conflicts.length > 0 && <KnowledgeGraph conflicts={conflicts} />}
+      {/* Knowledge Graph — semua device */}
+      {showGraph && conflicts.length > 0 && <KnowledgeGraph conflicts={conflicts} isMobile={isMobile} />}
 
       {/* Filter tabs */}
       <div style={{ display: 'flex', gap: isMobile ? 4 : 6, alignItems: 'center', marginBottom: 2, flexWrap: 'wrap' }}>
