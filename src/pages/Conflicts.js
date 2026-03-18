@@ -206,7 +206,7 @@ function AIVerdict({ conflict }) {
           messages: [{
             role: 'user',
             content: `Medical AI: Give a 1-sentence verdict (max 20 words) on which is more likely correct based on current consensus.
-Claim: "${conflict.claim_text || 'Medical claim'}"
+Claim: "${conflict.text || 'Medical claim'}"
 Severity: ${conflict.severity || 'major'}
 Respond with ONLY the verdict, no preamble.`
           }]
@@ -253,7 +253,7 @@ function ConflictCard({ conflict, index, isMobile }) {
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#52525b', letterSpacing: '0.1em' }}>COUNTER-EVIDENCE / KB</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr auto 1fr', gap: 14, alignItems: 'center', marginBottom: 12 }}>
-          <div style={{ fontSize: isMobile ? 13 : 14, color: '#f4f4f5', lineHeight: 1.5 }}>{conflict.claim_text || 'Medical claim detected in ArXiv paper'}</div>
+          <div style={{ fontSize: isMobile ? 13 : 14, color: '#f4f4f5', lineHeight: 1.5 }}>{conflict.text || 'Medical claim detected in ArXiv paper'}</div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             <div style={{ background: color, color: '#09090b', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, padding: '4px 10px', letterSpacing: '0.1em', boxShadow: `0 0 12px ${color}55` }}>VS</div>
             <div style={{ position: 'relative', width: 48, height: 48 }}>
