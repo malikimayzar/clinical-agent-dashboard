@@ -28,7 +28,7 @@ function KnowledgeGraph({ conflicts }) {
   const [links, setLinks] = useState([]);
   const [hoveredNode, setHoveredNode] = useState(null);
   const animRef = useRef(null);
-  const W = 520, H = 260;
+  const W = isMobile ? 320 : 520, H = isMobile ? 220 : 260;
 
   useEffect(() => {
     if (!conflicts.length) return;
